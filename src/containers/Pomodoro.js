@@ -1,123 +1,113 @@
 import React, {Component} from 'react'
-import SettingsBar from '../components/SettingsBar/SettingsBar'
 import Aux from '../hoc/Aux/Aux'
-import ProgressBar from '../components/ProgressBar/ProgressBar'
-import Countdown from 'react-countdown';
+import TimeTracker from '../components/TimeTracker/TimeTracker'
 
 // TODO:
-// prevent small break time from being longer than task time
-// prevent long break time from being shorter than short break time
+// warnings when trying to input invalid values
+    // tasksPerCycle cannot be less than 2
 // string together all range bars into one bar
-// figure out better way to determine phase ordering
-// enum for phases?
 // CSS etc
-
+// Add pause/stop/restart button
+// prop type validation
 
 class Pomodoro extends Component {
     state = {
-        showSettings: true,
-        showProgressBar: false,
-        taskTime: 25,
-        smallBreakTime: 5,
-        longBreakTime: 15,
         tasksPerCycle: 4,
         numCycles: 1,
         currentPhase: null,
         currentCycle: null,
+        phaseTime: {
+            task: 25,
+            shortBreak: 5,
+            longBreak: 15
+        },
+        phasesTimeline: null,
+        currentPhaseIndex: null
+    }
+
+    generatePhases() {
+        let phasesTimeline = ["task"]
+
+        for (var i = 0; i < this.state.tasksPerCycle - 1; i++) {            
+            phasesTimeline.push("shortBreak")
+            phasesTimeline.push("task")
+        }
+        phasesTimeline.push("longBreak")
+        
+        return phasesTimeline
     }
 
     getCountdownTime() {
-        var currentPhase = this.state.currentPhase
-        switch(currentPhase) {
-            case 'task':
-                return this.state.taskTime      
-            case 'shortBreak':
-                return this.state.smallBreakTime
-            case 'longBreak':
-                return this.state.longBreakTime
+        var currentPhase = this.getCurrentPhase()
+        if (!currentPhase) {
+            return null
+        }
+        return this.state.phaseTime[currentPhase]
+    }
+
+    getCurrentPhase() {
+        if (!this.state.phasesTimeline || this.state.currentPhaseIndex == null) {
+            return null
+        }
+        return this.state.phasesTimeline[this.state.currentPhaseIndex]
+    }
+
+    updatePhaseHandler = () => {
+        let currentPhaseIndex = this.state.currentPhaseIndex
+
+        if (currentPhaseIndex == null) {
+            this.setState({currentPhaseIndex: 0})
+        } else if (currentPhaseIndex >= this.state.phasesTimeline.length - 1) {
+            alert("Completed pomodoro cycle!")
+            this.setState({currentPhaseIndex: null})
+        } else {
+            let updatedPhaseIndex = currentPhaseIndex + 1
+            this.setState({currentPhaseIndex: updatedPhaseIndex})
         }
     }
 
-    updatePhase() {
-        // if (!currentCycle) {
-        //     this.setState({currentCycle: 0})
-        // }
+    updateTimeSettingHandler = (phase, event) => {
+        const updatedTime = {
+            ...this.state.phaseTime
+        }
+        updatedTime[phase] = event.target.value;
 
-        var currentPhase = this.state.currentPhase
-        if (!currentPhase) {
-            this.setState({currentPhase: "task"})
-            
-        } else {
-            switch(currentPhase) {
-                case 'task':
-                    var tasksLeft = this.state.tasksLeft - 1
-                    this.setState({tasksLeft: tasksLeft})
-                    if (tasksLeft > 0) {
-                        this.setState({currentPhase: "shortBreak"});
-                    } else {
-                        this.setState({currentPhase: "longBreak"});
-                    }
-                    break     
-                case 'shortBreak':
-                    this.setState({currentPhase: "task"});
-                    break
-                case 'longBreak':
-                    this.setState({currentPhase: null})
-                    alert('Pomodoro cycle completed!')
-                    break
-            }
-        }  
+        this.setState({phaseTime: updatedTime})
     }
 
-    timeRanOutHandler = () => {
-        this.updatePhase(this.state.currentPhase)
-    }
-
-    updateTaskTimeSettingHandler = (event) => {
-        this.setState({taskTime: event.target.value})
-    }
-    updateSmallBreakTimeSettingHandler = (event) => {
-        this.setState({smallBreakTime: event.target.value})
-    }
-    updateLongBreakTimeSettingHandler = (event) => {
-        this.setState({longBreakTime: event.target.value})
-    }
-
-    startTimerHandler = () => {
-        this.state.tasksLeft = this.state.tasksPerCycle
-        this.updatePhase()
+    startTimerHandler = () => {        
+        let phasesTimeline = this.generatePhases()
+        
+        this.setState({phasesTimeline: phasesTimeline, currentPhaseIndex: 0})
     }
 
     render() {
-        let countdown = this.state.currentPhase ? <Countdown key={Date.now()} onComplete={this.timeRanOutHandler}  date={Date.now() + (this.getCountdownTime()*60000)} /> : null
-
-        return (
-            
+        return (       
             <Aux>
                 {/* <SettingsBar updateSetting={this.updateSettingHandler} value={this.state.taskTime}/> */}
 
                 <label>
                     Task Time
-                    <input onChange={this.updateTaskTimeSettingHandler} type="range" min="0" max="60" value={this.state.taskTime} step="1" id="myRange" />
+                    <input onChange={(e) => this.updateTimeSettingHandler("task", e)} type="range" min="0" max="60" value={this.state.phaseTime["task"]} step="1" />
                 </label>
                 
                 <label>
                     Short break time
-                    <input onChange={this.updateSmallBreakTimeSettingHandler} type="range" min="0" max="60" value={this.state.smallBreakTime} step="1" id="myRange" />
+                    <input onChange={(e) => this.updateTimeSettingHandler("shortBreak", e)} type="range" min="0" max="60" value={this.state.phaseTime["shortBreak"]} step="1" />
                 </label>
 
                 <label>
                     Long break time
-                    <input onChange={this.updateLongBreakTimeSettingHandler} type="range" min="0" max="60" value={this.state.longBreakTime} step="1" id="myRange" />
+                    <input onChange={(e) => this.updateTimeSettingHandler("longBreak", e)} type="range" min="0" max="60" value={this.state.phaseTime["longBreak"]} step="1" />
                 </label>
+
 
                 {/* <input onChange={props.updateSetting} type="range" min="0" max="60" value={props.value} step="1" id="myRange" />
                 <input onChange={props.updateSetting} type="range" min="0" max="60" value={props.value} step="1" id="myRange" /> */}
             
 
                 <button onClick={this.startTimerHandler}>Start</button>
-                <ProgressBar />
-                {countdown}
+                <TimeTracker phasesTimeline={this.state.phasesTimeline} currentPhaseIndex={this.state.currentPhaseIndex} onComplete={this.updatePhaseHandler} countdownTimeInMinutes={this.getCountdownTime()} />
             </Aux>            
         );
     }
