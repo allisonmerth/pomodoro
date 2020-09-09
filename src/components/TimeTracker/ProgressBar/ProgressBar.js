@@ -1,30 +1,26 @@
 import React from 'react'
-import Aux from '../../../hoc/Aux/Aux'
+import classes from './ProgressBar.module.css'
+import phaseFullNameMap from '../../../constants/PhaseFullNameMap'
 
 const progressBar = (props) => {
-    const phases = {
-        "task": "Task",
-        "shortBreak": "Short Break",
-        "longBreak": "Long Break"
-    }
-    
     let phasesBar = []
     for (let i = 0; i < props.phasesTimeline.length; i++) {
-        let phase = props.phasesTimeline[i]
+        let phase = props.phasesTimeline[i];
         
-        let backgroundColor = "green"
-        if (i == props.currentPhaseIndex) {
-            backgroundColor = "red"
-        }        
+        let phaseClasses = [classes.Phase]
+        if (i === props.currentPhaseIndex) {
+            phaseClasses.push(classes.CurrentPhase)
+        } else if (i < props.currentPhaseIndex) {
+            phaseClasses.push(classes.PreviousPhase)
+        }
         
-        phasesBar.push(<div style={{backgroundColor: backgroundColor}}>{phases[phase]}</div>)
+        phasesBar.push(<div className={phaseClasses.join(' ')}>{phaseFullNameMap[phase]}</div>)
     }
 
     return (
-        <Aux>
+        <div>
             {phasesBar}
-        </Aux>
-        
+        </div>       
     );
 }
 

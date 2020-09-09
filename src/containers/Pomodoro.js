@@ -1,16 +1,21 @@
 import React, {Component} from 'react'
 import Aux from '../hoc/Aux/Aux'
 import TimeTracker from '../components/TimeTracker/TimeTracker'
+import SettingsBar from '../components/SettingsBar/SettingsBar'
+import classes from './Pomodoro.module.css'
 
 // TODO:
 // warnings when trying to input invalid values
     // tasksPerCycle cannot be less than 2
+    // short break cannot be longer than long break OR task
 // string together all range bars into one bar
 // CSS etc
 // Add pause/stop/restart button
 // prop type validation
+// css adjust for window size (don't show progressBar if window is too small)
 
 class Pomodoro extends Component {
+
     state = {
         tasksPerCycle: 4,
         numCycles: 1,
@@ -23,7 +28,7 @@ class Pomodoro extends Component {
         },
         phasesTimeline: null,
         currentPhaseIndex: null
-    }
+    }   
 
     generatePhases() {
         let phasesTimeline = ["task"]
@@ -75,39 +80,59 @@ class Pomodoro extends Component {
         this.setState({phaseTime: updatedTime})
     }
 
+    getSettingValueHandler = (phase) => {
+        return this.state.phaseTime[phase]
+    }
+
     startTimerHandler = () => {        
         let phasesTimeline = this.generatePhases()
         
         this.setState({phasesTimeline: phasesTimeline, currentPhaseIndex: 0})
     }
 
+    stopTimerHandler = () => {                
+        this.setState({currentPhaseIndex: null})
+    }
+
+    pauseTimerHandler = () => {
+
+    }
+
     render() {
+        let button = <button onClick={this.startTimerHandler}>Start</button>
+
+        if (this.state.currentPhaseIndex != null) {
+            button = <button onClick={this.stopTimerHandler}>Stop</button>
+        }
+        
         return (       
             <Aux>
-                {/* <SettingsBar updateSetting={this.updateSettingHandler} value={this.state.taskTime}/> */}
+                <SettingsBar 
+                    settingsList={["task", "shortBreak", "longBreak"]} 
+                    updateTimeSettingHandler={this.updateTimeSettingHandler} 
+                    getSettingValueHandler={this.getSettingValueHandler} />
 
-                <label>
+                {/* <label>
                     Task Time
-                    <input onChange={(e) => this.updateTimeSettingHandler("task", e)} type="range" min="0" max="60" value={this.state.phaseTime["task"]} step="1" />
+                    <input className={classes.Setting} onChange={(e) => this.updateTimeSettingHandler("task", e)} type="range" min="0" max="60" value={this.state.phaseTime["task"]} step="1" />
                 </label>
                 
                 <label>
                     Short break time
-                    <input onChange={(e) => this.updateTimeSettingHandler("shortBreak", e)} type="range" min="0" max="60" value={this.state.phaseTime["shortBreak"]} step="1" />
+                    <input className={classes.Setting} onChange={(e) => this.updateTimeSettingHandler("shortBreak", e)} type="range" min="0" max="60" value={this.state.phaseTime["shortBreak"]} step="1" />
                 </label>
 
                 <label>
                     Long break time
-                    <input onChange={(e) => this.updateTimeSettingHandler("longBreak", e)} type="range" min="0" max="60" value={this.state.phaseTime["longBreak"]} step="1" />
-                </label>
+                    <input className={classes.Setting} onChange={(e) => this.updateTimeSettingHandler("longBreak", e)} type="range" min="0" max="60" value={this.state.phaseTime["longBreak"]} step="1" />
+                </label> */}
 
-
-                {/* <input onChange={props.updateSetting} type="range" min="0" max="60" value={props.value} step="1" id="myRange" />
-                <input onChange={props.updateSetting} type="range" min="0" max="60" value={props.value} step="1" id="myRange" /> */}
-            
-
-                <button onClick={this.startTimerHandler}>Start</button>
-                <TimeTracker phasesTimeline={this.state.phasesTimeline} currentPhaseIndex={this.state.currentPhaseIndex} onComplete={this.updatePhaseHandler} countdownTimeInMinutes={this.getCountdownTime()} />
+                {button}
+                <TimeTracker 
+                    phasesTimeline={this.state.phasesTimeline} 
+                    currentPhaseIndex={this.state.currentPhaseIndex} 
+                    onComplete={this.updatePhaseHandler} 
+                    countdownTimeInMinutes={this.getCountdownTime()} />
             </Aux>            
         );
     }
