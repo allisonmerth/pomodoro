@@ -2,15 +2,14 @@ import React, {Component} from 'react'
 import Aux from '../hoc/Aux/Aux'
 import TimeTracker from '../components/TimeTracker/TimeTracker'
 import SettingsBar from '../components/SettingsBar/SettingsBar'
-import classes from './Pomodoro.module.css'
+import './Pomodoro.css'
 
 // TODO:
 // warnings when trying to input invalid values
-    // tasksPerCycle cannot be less than 2
     // short break cannot be longer than long break OR task
 // string together all range bars into one bar
 // CSS etc
-// Add pause/stop/restart button
+// Add pause button
 // prop type validation
 // css adjust for window size (don't show progressBar if window is too small)
 
@@ -19,15 +18,14 @@ class Pomodoro extends Component {
     state = {
         tasksPerCycle: 4,
         numCycles: 1,
-        currentPhase: null,
-        currentCycle: null,
         phaseTime: {
             task: 25,
             shortBreak: 5,
             longBreak: 15
         },
         phasesTimeline: null,
-        currentPhaseIndex: null
+        currentPhaseIndex: null,
+        cyclesRemaining: null
     }   
 
     generatePhases() {
@@ -63,8 +61,15 @@ class Pomodoro extends Component {
         if (currentPhaseIndex == null) {
             this.setState({currentPhaseIndex: 0})
         } else if (currentPhaseIndex >= this.state.phasesTimeline.length - 1) {
-            alert("Completed pomodoro cycle!")
-            this.setState({currentPhaseIndex: null})
+            
+            if (this.state.cyclesRemaining > 0) {                
+                this.setState({
+                    cyclesRemaining: this.state.cyclesRemaining - 1,
+                    currentPhaseIndex: 0})
+            } else {
+                alert("Completed pomodoro cycle!")
+                this.setState({currentPhaseIndex: null})
+            }           
         } else {
             let updatedPhaseIndex = currentPhaseIndex + 1
             this.setState({currentPhaseIndex: updatedPhaseIndex})
@@ -87,15 +92,14 @@ class Pomodoro extends Component {
     startTimerHandler = () => {        
         let phasesTimeline = this.generatePhases()
         
-        this.setState({phasesTimeline: phasesTimeline, currentPhaseIndex: 0})
+        this.setState({
+            phasesTimeline: phasesTimeline, 
+            currentPhaseIndex: 0,
+            cyclesRemaining: this.state.numCycles - 1})
     }
 
     stopTimerHandler = () => {                
         this.setState({currentPhaseIndex: null})
-    }
-
-    pauseTimerHandler = () => {
-
     }
 
     render() {
@@ -107,25 +111,22 @@ class Pomodoro extends Component {
         
         return (       
             <Aux>
+                <h1>Pomodoro!</h1>
+                
                 <SettingsBar 
                     settingsList={["task", "shortBreak", "longBreak"]} 
                     updateTimeSettingHandler={this.updateTimeSettingHandler} 
                     getSettingValueHandler={this.getSettingValueHandler} />
 
-                {/* <label>
-                    Task Time
-                    <input className={classes.Setting} onChange={(e) => this.updateTimeSettingHandler("task", e)} type="range" min="0" max="60" value={this.state.phaseTime["task"]} step="1" />
-                </label>
-                
                 <label>
-                    Short break time
-                    <input className={classes.Setting} onChange={(e) => this.updateTimeSettingHandler("shortBreak", e)} type="range" min="0" max="60" value={this.state.phaseTime["shortBreak"]} step="1" />
+                    Tasks per cycle
+                    <input type="number"  value={this.state.tasksPerCycle} onChange={(e) => {if (e.target.value > 1) {this.setState({tasksPerCycle: e.target.value})}}}/>
                 </label>
 
                 <label>
-                    Long break time
-                    <input className={classes.Setting} onChange={(e) => this.updateTimeSettingHandler("longBreak", e)} type="range" min="0" max="60" value={this.state.phaseTime["longBreak"]} step="1" />
-                </label> */}
+                    Number of pomodoro cycles
+                    <input type="number"  value={this.state.numCycles} onChange={(e) => {if (e.target.value > 0) {this.setState({numCycles: e.target.value})}}}/>
+                </label>
 
                 {button}
                 <TimeTracker 
@@ -133,6 +134,9 @@ class Pomodoro extends Component {
                     currentPhaseIndex={this.state.currentPhaseIndex} 
                     onComplete={this.updatePhaseHandler} 
                     countdownTimeInMinutes={this.getCountdownTime()} />
+
+
+                <p>TESTING</p>
             </Aux>            
         );
     }

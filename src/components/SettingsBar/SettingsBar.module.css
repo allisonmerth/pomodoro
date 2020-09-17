@@ -1,0 +1,8 @@
+.Settings {
+    border: 5px solid #ccc;
+    box-shadow: 1px 1px 1px black;
+    padding: 16px;
+    left: 15%;
+    top: 30%;
+    display: float;
+}

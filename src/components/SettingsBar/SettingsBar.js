@@ -1,6 +1,7 @@
 import React from 'react'
 import Aux from '../../hoc/Aux/Aux'
 import Setting from './Setting/Setting'
+import classes from './SettingsBar.module.css'
 
 const settingsBar = (props) => {
     let settings = []
@@ -14,9 +15,10 @@ const settingsBar = (props) => {
     }
     
     return (
-        <Aux>
+        <div className={classes.Settings}>
+            <h4>Customize your pomodoro:</h4>
             {settings}
-        </Aux> 
+        </div> 
     )
 }
 
