@@ -14,4 +14,5 @@ Configure pomodoro cycle:
 ![screenshot_1](https://raw.githubusercontent.com/allisonmerth/pomodoro/master/screenshots/pomodoro_1.jpg)
 
 Progress bar and countdown during phases:
+
 ![screenshot_2](https://raw.githubusercontent.com/allisonmerth/pomodoro/master/screenshots/pomodoro_2.jpg)
