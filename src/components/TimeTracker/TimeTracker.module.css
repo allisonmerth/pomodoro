@@ -1,0 +1,11 @@
+.Countdown {
+    font-size: x-large;
+    margin: 20px;
+}
+
+.Number {
+    background-color: white;
+    font-weight: bold;
+    border: 2px solid black;
+    padding: 3px;
+}

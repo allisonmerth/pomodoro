@@ -2,14 +2,14 @@
     display: inline;
     border-style: solid;
     border-width: 2px 1px;
-    padding: 3px;
+    padding: 5px;
 }
 
 .CurrentPhase {
-    background-color: blue;
+    background: linear-gradient(#0f509b, #b9c2e7);
 }
 
 .PreviousPhase {
-    background-color: green;
+    background: linear-gradient(#077e03, #bbd1bd);
 }
 

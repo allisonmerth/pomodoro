@@ -14,11 +14,11 @@ const progressBar = (props) => {
             phaseClasses.push(classes.PreviousPhase)
         }
         
-        phasesBar.push(<div className={phaseClasses.join(' ')}>{phaseFullNameMap[phase]}</div>)
+        phasesBar.push(<div key={phase + "_" + i} className={phaseClasses.join(' ')}>{phaseFullNameMap[phase]}</div>)
     }
 
     return (
-        <div>
+        <div style={{margin: "20px"}}>
             {phasesBar}
         </div>       
     );

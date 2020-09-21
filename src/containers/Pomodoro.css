@@ -1,9 +1,31 @@
 h1 {
     font-family: 'Shadows Into Light', cursive;
-    font-size: 4rem;
+    font-size: 3rem;
 }
 
-p {
-    background: linear-gradient(#228c1d, #91ce50);
-
+button {
+    background-color: rgb(153, 10, 10);
+    outline: none;
+    cursor: pointer;
+    border: 1px solid black;
+    color: white;
+    font-family: inherit;
+    font-size: 1.2em;
+    padding: 15px 30px;
+    box-shadow: 2px 2px 2px #5c5b5b;
+    border-radius: 5px;
+    margin: 20px;
 }
+
+button:hover, button:active {
+    background-color: rgb(6, 133, 17);
+    border: 1px solid black;
+    color: white;
+}
+
+input[type=number] {
+    width: 50px;
+    padding: 5px;
+    margin: 8px 0;
+    box-sizing: border-box;
+  }

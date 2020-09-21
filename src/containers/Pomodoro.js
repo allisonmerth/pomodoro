@@ -8,10 +8,10 @@ import './Pomodoro.css'
 // warnings when trying to input invalid values
     // short break cannot be longer than long break OR task
 // string together all range bars into one bar
-// CSS etc
 // Add pause button
 // prop type validation
-// css adjust for window size (don't show progressBar if window is too small)
+// css adjust for window size (e.g. don't show progressBar if window is too small)
+// make phase timeline a circle rather than bar
 
 class Pomodoro extends Component {
 
@@ -67,7 +67,7 @@ class Pomodoro extends Component {
                     cyclesRemaining: this.state.cyclesRemaining - 1,
                     currentPhaseIndex: 0})
             } else {
-                alert("Completed pomodoro cycle!")
+                alert("Completed pomodoro!")
                 this.setState({currentPhaseIndex: null})
             }           
         } else {
@@ -108,35 +108,41 @@ class Pomodoro extends Component {
         if (this.state.currentPhaseIndex != null) {
             button = <button onClick={this.stopTimerHandler}>Stop</button>
         }
-        
-        return (       
+
+        let settings = (
             <Aux>
-                <h1>Pomodoro!</h1>
-                
                 <SettingsBar 
                     settingsList={["task", "shortBreak", "longBreak"]} 
                     updateTimeSettingHandler={this.updateTimeSettingHandler} 
                     getSettingValueHandler={this.getSettingValueHandler} />
-
-                <label>
+                
+                <div style={{margin: "20px"}}>
                     Tasks per cycle
-                    <input type="number"  value={this.state.tasksPerCycle} onChange={(e) => {if (e.target.value > 1) {this.setState({tasksPerCycle: e.target.value})}}}/>
-                </label>
+                    <input type="number" value={this.state.tasksPerCycle} onChange={(e) => {if (e.target.value > 1) {this.setState({tasksPerCycle: e.target.value})}}}/>
 
-                <label>
                     Number of pomodoro cycles
-                    <input type="number"  value={this.state.numCycles} onChange={(e) => {if (e.target.value > 0) {this.setState({numCycles: e.target.value})}}}/>
-                </label>
+                    <input type="number" value={this.state.numCycles} onChange={(e) => {if (e.target.value > 0) {this.setState({numCycles: e.target.value})}}}/>
+                </div>
+            </Aux>
+            )
 
+        if (this.state.currentPhaseIndex != null) {
+            settings = null
+        }
+        
+        return (       
+            <Aux>
+                <h1>Pomodoro!</h1>
                 {button}
+
+                {settings}
+
                 <TimeTracker 
                     phasesTimeline={this.state.phasesTimeline} 
                     currentPhaseIndex={this.state.currentPhaseIndex} 
                     onComplete={this.updatePhaseHandler} 
                     countdownTimeInMinutes={this.getCountdownTime()} />
 
-
-                <p>TESTING</p>
             </Aux>            
         );
     }
